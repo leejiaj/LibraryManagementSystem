@@ -1,0 +1,283 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Library Management System</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+        <script src="angular.min.js"></script>
+        <script src="https://use.fontawesome.com/6ac968def4.js"></script>
+        <script src="libraryController.js"></script>
+    	<script src="http://angular-ui.github.com/bootstrap/ui-bootstrap-tpls-0.1.0.js"></script>
+        <link rel = "stylesheet" type = "text/css" href = "libraryStyle.css" />
+        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/css/bootstrap-combined.min.css" rel="stylesheet">
+
+    </head>
+    <body ng-app='myapp'>
+
+        <div ng-controller="userCtrl"  ng-init="tab=1">
+
+            <table>
+            <tr>
+                <td>
+                    <div class="tab-control" ng-click="tab = 1">Book Search and Check Out</div>
+                </td>
+                <td>
+                    <div class="tab-control" ng-click="tab = 2">Check In Book</div>  
+                </td>
+                <td>
+                    <div class="tab-control" ng-click="tab = 3">Add New Borrower</div>  
+                </td>
+                <td>
+                    <div class="tab-control" ng-click="tab = 4">Handle Fines</div>  
+                </td>
+            </tr>                             
+            </table>
+
+            <div ng-show="tab == 1">
+                <h3>Book Search and Check Out</h3>
+                <h6>Search Book by ISBN, Title and Authors</h6>
+
+                <div class="input-group">
+                    <input class="form-control" id="searchQuery" ng-model="searchQuery" type="text" placeholder="Find ISBN, Title and Authors">
+                    <span class="input-group-btn">
+                    <button class="btn btn-default" type="submit" ng-click="searchBook()" value="search">
+                     <i class="fa fa-search" aria-hidden="true"></i>
+                    </button>
+                    </span>
+                </div>
+            
+                <span> *Book Availability: 1-Available/0-Not Available</span>
+                <div style="color: red;font-size: medium;">{{message}}</div>
+                <table>
+                    
+                    <tr>
+                        <th>ISBN</th>
+                        <th>Book Title</th>
+                        <th>Book Author(s)</th>
+                        <th>Book Availability</th>
+                        <th></th>
+                    </tr>
+                    
+                    <tr ng-repeat="book in books">
+                    <td>{{book.isbn}}</td>
+                    <td>{{book.title}}</td>
+                    <td>{{book.name}}</td>
+                    <td>{{book.availability}}</td>
+                    <td ng-if="book.availability==1">
+                        <button class="btn btn-default" type="submit" ng-click="checkOut(book)">
+                            Checkout
+                        </button>                   
+                    </td>
+                    </tr>
+                    
+                </table>
+             </div>
+
+            <div ng-show="tab == 2">
+                <h3>Check In Book</h3>
+                <h6>Search Book by ISBN, Card ID or Borrower Name</h6>
+
+                <div class="input-group">
+                    <input class="form-control" id="searchQueryCheckIn" ng-model="searchQueryCheckIn" type="text" placeholder="ISBN, Card ID or Borrower Name">
+                    <span class="input-group-btn">
+                    <button class="btn btn-default" type="submit" ng-click="searchBookCheckIn()" value="search">
+                     <i class="fa fa-search" aria-hidden="true"></i>
+                    </button>
+                    </span>
+                </div>
+                <div style="color: red;font-size: medium;">{{checkinmessage}}</div>
+                <table>
+                    
+                    <tr>
+                        <th>Loan ID</th>
+                        <th>ISBN</th>
+                        <th>Card ID</th>
+                        <th>Date Out</th>                        
+                        <th>Due Date</th>
+                        <th>Date In</th>
+                        <th>Borrower First Name</th>
+                        <th>Borrower Last Name</th>
+                        <th></th>
+                    </tr>
+                    
+                    <tr ng-repeat="bookcheckin in bookscheckin">
+                    <td>{{bookcheckin.loanid}}</td>
+                    <td>{{bookcheckin.isbn}}</td>
+                    <td>{{bookcheckin.cardid}}</td>
+                    <td>{{bookcheckin.dateout}}</td>
+                    <td>{{bookcheckin.duedate}}</td>
+                    <td>{{bookcheckin.datein}}</td>
+                    <td>{{bookcheckin.firstname}}</td>
+                    <td>{{bookcheckin.lastname}}</td>
+                    <td ng-if="!bookcheckin.datein">
+                        <button class="btn btn-default" type="submit" ng-click="checkIn(bookcheckin)">
+                            Checkin
+                        </button>                   
+                    </td>
+                    </tr>
+                    
+                </table>
+
+            </div>
+
+            <div ng-show="tab == 3">
+                <h3>Add New Borrower</h3>
+               
+                    <form name="borrowerForm" novalidate>
+                        <label>Fields marked with * are mandatory</label>
+                        <span style="color:red;">{{addborrowermessage}}<br></span>
+                        <table style="margin: auto;">
+                        <tr>
+                            <td><label>SSN*</label></td>
+                            <td><input type="number" name="ssn" class="borrower-form-control" ng-model="ssn" ng-minlength="10" ng-maxlength="10" required></td>
+
+                        </tr>
+                        <tr>
+                            <td><label>First Name*</label></td>
+                            <td><input type="text" name="firstname" class="borrower-form-control" ng-model="firstname" ng-maxlength="25" required></td>
+                        </tr>
+
+                        <tr>
+                            <td><label>Last Name*</label></td>
+                            <td><input type="text" name="lastname" class="borrower-form-control" ng-model="lastname" ng-maxlength="25" required></td>
+                        </tr>
+
+                        <tr>
+                            <td><label>Email</label></td>
+                            <td><input type="email" name="email" class="borrower-form-control" ng-model="email" ng-maxlength="50"></td>
+                        </tr>
+
+                        <tr>
+                            <td><label>Address*</label></td>
+                            <td><input type="text" name="address" class="borrower-form-control" ng-model="address"  ng-maxlength="50" required></td>
+                        </tr>
+
+                        <tr>
+                            <td><label>City</label></td>
+                            <td><input type="text" name="city" class="borrower-form-control" ng-model="city" ng-maxlength="25"></td>
+                        </tr>
+
+                        <tr>
+                            <td><label>State</label></td>
+                            <td><input type="text" name="state" class="borrower-form-control" ng-model="state" ng-maxlength="2"></td>
+                        </tr>
+
+                        <tr>
+                            <td><label>Phone</label></td>
+                            <td><input type="text" name="phone" class="borrower-form-control" ng-model="phone" ng-maxlength="15"></td>
+                        </tr>
+
+                        <tr>
+                        <td></td><td>
+                            <span ng-show="borrowerForm.ssn.$touched && borrowerForm.ssn.$invalid" style="color:red;">SSN is required (exactly 10 digits)<br></span>
+                            <span ng-show="borrowerForm.firstname.$touched && borrowerForm.firstname.$invalid" style="color:red;">First Name is required (max length 25)<br></span>
+                            <span ng-show="borrowerForm.lastname.$touched && borrowerForm.lastname.$invalid" style="color:red;">Last Name is required (max length 25)<br></span>
+                            <span ng-show="borrowerForm.email.$touched && borrowerForm.email.$invalid" style="color:red;">Email max length is 50/check email format<br></span>
+                            <span ng-show="borrowerForm.address.$touched && borrowerForm.address.$invalid" style="color:red;">Address is required (max length 50)<br></span>
+                            <span ng-show="borrowerForm.city.$touched && borrowerForm.city.$invalid" style="color:red;">City max length is 25<br></span>
+                            <span ng-show="borrowerForm.state.$touched && borrowerForm.state.$invalid" style="color:red;">State max length is 2<br></span>
+                            <span ng-show="borrowerForm.phone.$touched && borrowerForm.phone.$invalid" style="color:red;">Phone max length is 15<br></span>
+                            </td>
+                        </tr>
+
+                        <tr><td></td><td><button type="submit" class="btn btn-primary" ng-disabled="borrowerForm.ssn.$invalid || borrowerForm.firstname.$invalid || borrowerForm.lastname.$invalid || borrowerForm.address.$invalid || borrowerForm.email.$invalid || borrowerForm.city.$invalid || borrowerForm.state.$invalid || borrowerForm.phone.$invalid" ng-click="insertBorrower()">Submit</button></td></tr>
+
+                        </table>
+                    </form>
+
+            </div>
+            <div ng-show="tab == 4 || tab == 5 || tab == 6">
+                <h3>Handle Fines</h3>
+                <h6>Click button to Update/Refresh Fines Table:                     
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" style="width: auto;" type="submit" ng-click="updateFines()" value="search">
+                         Update/Refresh Fines Table
+                        </button>
+                    </span>
+                </h6>
+                <div style="color: red;font-size: medium;">{{updatemessage}}</div>
+
+                <table>
+                <tr>
+                    <td>
+                        <div class="tab-control" ng-click="tab = 5">Display Fine Details and Pay</div>
+                    </td>
+                    <td>
+                        <div class="tab-control" ng-click="tab = 6">Display Fine Details per Borrower</div>  
+                    </td>
+                </tr>                             
+                </table>
+
+                <div ng-show="tab == 5">
+                    <h6>Click to Display and Pay Fines:
+                            <button class="btn btn-default" style="width: auto;" type="submit" ng-click="getFines()" value="search">
+                                Display Fine Details and Pay 
+                            </button>
+                    </h6>
+                    <div style="color: red;font-size: medium;">{{payfinemessage}}</div>
+
+                    <table>
+                        
+                        <tr>
+                            <th>Loan ID</th>
+                            <th>ISBN</th>
+                            <th>Card ID</th>
+                            <th>Date Out</th>                        
+                            <th>Due Date</th>
+                            <th>Date In</th>
+                            <th>Fine Amount</th>
+                            <th>Paid (0-Not Paid/1-Paid)</th>
+                            <th></th>
+                        </tr>
+                        
+                        <tr ng-repeat="finedetail in finedetails">
+                        <td>{{finedetail.loanid}}</td>
+                        <td>{{finedetail.isbn}}</td>
+                        <td>{{finedetail.cardid}}</td>
+                        <td>{{finedetail.dateout}}</td>
+                        <td>{{finedetail.duedate}}</td>
+                        <td>{{finedetail.datein}}</td>
+                        <td>{{finedetail.fineamt}}</td>
+                        <td>{{finedetail.paid}}</td>
+                        <td ng-if="finedetail.datein">
+                            <button class="btn btn-default" type="submit" style="width: auto;" ng-click="payFine(finedetail)">
+                                Pay Fine
+                            </button>                   
+                        </td>
+                        </tr>
+                        
+                    </table>
+                </div>
+
+                <div ng-show="tab == 6">
+                    <h6>Click to display Fines per Borrower:
+                            <button class="btn btn-default" style="width: auto;" type="submit" ng-click="getFinesperBorrower()" value="search">
+                                Display Fine Details per Borrower
+                            </button>
+                    </h6>
+                    <table>
+                        
+                        <tr>
+                            <th>Card ID</th>
+                            <th>Borrower First Name</th>
+                            <th>Borrower Last Name</th>
+                            <th>Total Fine Amount</th>
+                        </tr>
+                        
+                        <tr ng-repeat="finedetailborrower in finedetailsborrower">
+                        <td>{{finedetailborrower.cardid}}</td>
+                        <td>{{finedetailborrower.firstname}}</td>
+                        <td>{{finedetailborrower.lastname}}</td>
+                        <td>{{finedetailborrower.totalfineamt}}</td>
+                        </tr>
+                        
+                    </table>
+                </div>
+
+            </div>
+        	
+        </div>
+        
+        <!-- Script -->
+    </body>
+
+</html>

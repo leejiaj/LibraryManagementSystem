@@ -1,0 +1,14 @@
+<div class="modal-header">
+  <h1>Check Out Book</h1>
+</div>
+<div class="modal-body">
+  <p>
+	  <label>Enter Card ID: </label>
+	  <input ng-model="cardid"/>
+	  <label>{{messageModal}}</label>
+  </p>
+</div>
+<div class="modal-footer">
+  <button ng-click="checkOutBook()" class="btn btn-primary">Check Out</button>
+  <button ng-click="close()" class="btn" >close</button>
+</div>
